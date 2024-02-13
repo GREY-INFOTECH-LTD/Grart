@@ -1,0 +1,11 @@
+media/
+TESTING.md
+functions/
+db.sqlite3
+model-tests.md
+wireframes/
+.theia/
+README.md
+__pycache__
+venv/
+.vscode

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cart_tools %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'checkout/css/checkout.css' %}">
+{% endblock %}
+
+{% block page_header %}
+<div class="container header-container">
+    <div class="row">
+        <div class="col"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="overlay"></div>
+
+<div class="container-fluid">
+    <div class="row py-3 text-center pt-5">
+        <div class="col-12">
+            <span class="icon pt-5">
+                <i class="fas fa-lock fa-3x py-5 mt-5"></i>
+            </span>
+            <h2 class="display-font text-center pt-3">Checkout</h2>
+            <p class="text-center body-font mx-5 my-3 px-4">Here at Grart, we pride ourselves on delivering our
+                high-quality
+                artwork quickly and securely. <br> Please enter your payment details and checkout below.</p>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-4 order-md-2 mb-4">
+            <h4 class="align-items-center mb-3">
+                <span class="ms-3">Your Order</span>
+                <span class="badge" id="checkout_badge">{{ product_count }}</span>
+                <span class="badge" id="checkout_badge">{{ order.timestamp }}</span>
+
+            </h4>
+            <ul class="list-group w-100 mb-3 sticky-top">
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="col-6">
+                        <h6 class="my-0 text-small">Items</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="my-0 display-font">Subtotal</h6>
+                    </div>
+                </li>
+                {% for item in cart_items %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <div class="col-6">
+                        {% if item.product.image %}
+                        <figure class="figure">
+                            <img class="figure-img img-fluid w-50" src="{{ item.product.image.url }}"
+                                alt="{{ product.name }}" oncontextmenu="return false" onselectstart="return false"
+                                ondragstart="return false">
+                            <figcaption class="figure-caption body-font">{{ item.product.title }}</figcaption>
+                        </figure>
+                        {% else %}
+                        <h6 class="my-0 fw-bold">{{ item.product.title }}</h6>
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        <span class="body-font fw-bold text-muted">
+                            ${{ item.product.price | calc_subtotal:item.quantity }}</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <!--./end-col-->
+        <!--./end-row-->
+        <!-- Checkout Form Starts Here -->
+        <div class="col-md-7 col-12">
+            <form action="{% url 'checkout' %}" method="POST" id="payment-form">
+                {% csrf_token %}
+                <fieldset class="rounded px-3 mb-5">
+                    <legend class="fieldset-label small text-dark px-2 w-auto">
+                        <h4 class="align-items-center mb-3">
+                            <span>Your Info</span>
+                        </h4>
+                    </legend>
+                    {{ order_form.user_full_name | as_crispy_field }}
+                    {{ order_form.email | as_crispy_field }}
+                </fieldset>
+                <fieldset class="rounded px-3 mb-5">
+                    <legend class="fieldset-label small text-dark px-2 w-auto">
+                        <h4 class="align-items-center mb-3">
+                            <span>Billing Details</span>
+                        </h4>
+                    </legend>
+                    {{ order_form.phone_number | as_crispy_field }}
+                    {{ order_form.town_or_city | as_crispy_field }}
+                    {{ order_form.postcode | as_crispy_field }}
+                    {{ order_form.street_address1 | as_crispy_field }}
+                    {{ order_form.street_address2 | as_crispy_field }}
+                    {{ order_form.county | as_crispy_field }}
+                    {{ order_form.country | as_crispy_field }}
+                    <div class="form-check form-check-inline float-right mr-0">
+                        {% if user.is_authenticated %}
+                        <label class="form-check-label body-font" for="id-save-info">Save my billing address to my
+                            profile for use in future purchases</label>
+                        <input class="form-check-input ml-2 mr-0" type="checkbox" id="id-save-info" name="save-info"
+                            checked>
+                        {% else %}
+                        <label class="form-check-label" for="id-save-info">
+                            <p class="body-font">
+                                <span>
+                                    <a class="link-font" href="{% url 'account_signup' %}">Create an account</a>
+                                </span>
+                                or
+                                <span>
+                                    <a class="link-font" href="{% url 'account_login' %}">login</a></span> to save this
+                                information
+                            </p>
+                        </label>
+                        {% endif %}
+                    </div>
+                </fieldset>
+                <!-- Stripe payment elements start here -->
+                <fieldset class="px-3">
+                    <legend class="fieldset-label small text-dark body-font fw-bold px-2 w-auto">Payment</legend>
+                    <!-- Use JavaScript to render Stripe card element here -->
+                    <div class="mb-3" id="card-element"></div>
+                    <!-- Display card errors here-->
+                    <div class="mb-3 text-danger" id="card-errors" role="alert"></div>
+                    <!-- Pass client secret to the view to get payment intent id here -->
+                    <input type="hidden" value="{{ client_secret }}" name="client_secret">
+                </fieldset>
+                <!--Submit Button starts here -->
+                <div class="submit-button text-center mt-5 mb-2">
+                    <a href="{% url 'view_cart' %}" class="btn link-font">
+                        <span class="icon">
+                            <i class="fas fa-chevron-circle-left"></i>
+                        </span>
+                        <span class="fw-bold">Update Cart</span>
+                    </a>
+                    <button id="submit-button" class="link-font">
+                        <span class="fw-bold">Complete Order</span>
+                        <span class="icon">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </button>
+                    <p class="text-small text-danger my-0">
+                        <span class="icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </span>
+                        <span class="body-font">Your card will be charged
+                            <strong>${{ grand_total|floatformat:2 }}
+                            </strong>
+                        </span>
+                    </p>
+                </div>
+                <!--./end-submit-button-->
+            </form>
+        </div>
+    </div>
+</div>
+<div id="loading-overlay">
+    <h1 class="text-light logo-font loading-spinner">
+        <span class="icon">
+            <i class="fas fa-3x fa-spinner fa-spin"></i>
+        </span>
+    </h1>
+</div>
+<!--./end-container-->
+{% endblock %}
+<!--./end-block-->
+{% block postloadjs %}
+{{ block.super }}
+{{ stripe_public_key|json_script:"id_stripe_public_key" }}
+{{ client_secret|json_script:"id_client_secret" }}
+<script src="{% static 'checkout/js/stripe_elements.js' %}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+{% endblock %}

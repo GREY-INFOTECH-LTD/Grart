@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'profiles/css/profile.css' %}">
+{% endblock %}
+
+{% block page_header %}
+<div class="container header-container">
+    <div class="row">
+        <div class="col"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+  <div class="row">
+    <div class="col-12 text-center my-3 my-md-4">
+  <h1>Edit Artwork</h1>
+  </div>
+  <div class="col-10 offset-1 mt-md-4">
+  <div class="card h-100 p-3 p-md-4 p-lg-5 m-lg-3">
+    <form class="body-font" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.title|as_crispy_field }}
+      {{ form.is_downloadable|as_crispy_field }}
+      {{ form.is_public|as_crispy_field }}
+      <button class="btn btn-primary mt-3" type="submit">Save Changes</button>
+  </form>
+  </div>
+  </div>
+  </div>
+{% endblock %}
