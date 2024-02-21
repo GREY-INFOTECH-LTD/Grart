@@ -1,0 +1,22 @@
+{
+  "name": "Grart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grey-infotech-ltd/grart.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grey-infotech-ltd/grart/issues"
+  },
+  "homepage": "https://github.com/grey-infotech-ltd/grart#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
