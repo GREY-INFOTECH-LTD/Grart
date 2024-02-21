@@ -1,5 +1,5 @@
 {
-  "name": "starter-express-api",
+  "name": "Grart",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cyclic-software/starter-express-api.git"
+    "url": "git+https://github.com/GREY-INFOTECH-LTD/Grart.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cyclic-software/starter-express-api/issues"
+    "url": "https://github.com/GREY-INFOTECH-LTD/Grart/issues"
   },
-  "homepage": "https://github.com/cyclic-software/starter-express-api#readme",
+  "homepage": "https://github.com/GREY-INFOTECH-LTD/Grart#readme",
   "dependencies": {
     "express": "^4.18.2"
   }
